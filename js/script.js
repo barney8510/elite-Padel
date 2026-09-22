@@ -1,10 +1,10 @@
 const products = [
-  { id: "rally-one", name: "The One", brand: "Rally / Everyday", price: 145, type: "Control", image: "images/rally-one.jpg", color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
-  { id: "rally-line", name: "Line 01", brand: "Rally / Precision", price: 185, type: "Precision", image: "images/rally-line.jpg", color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." },
-  { id: "rally-pulse", name: "Pulse", brand: "Rally / Attack", price: 220, type: "Power", image: "images/rally-pulse.jpg", color: "#e8d8c6", accent: "#202522", tag: "Power", description: "A high-balance weapon that turns a clean swing into serious pace." },
-  { id: "rally-soft", name: "Soft Serve", brand: "Rally / Comfort", price: 160, type: "Comfort", image: "images/rally-soft.jpg", color: "#ead8df", accent: "#c9f25d", tag: "Easy feel", description: "Soft at impact and easy on the arm, with plenty of room for your game to grow." },
-  { id: "rally-court", name: "Court 02", brand: "Rally / Balanced", price: 195, type: "Balance", image: "images/rally-court.jpg", color: "#d5d8ca", accent: "#ef7657", tag: "Balanced", description: "A balanced teardrop for composed transitions and confident net play." },
-  { id: "rally-apex", name: "Apex", brand: "Rally / Tour", price: 260, type: "Power", image: "images/rally-apex.jpg", color: "#d3d1e0", accent: "#c9f25d", tag: "Tour", description: "Tour-level stability and a diamond face for players who own the overhead." }
+  { id: "rally-one", name: "The One", brand: "Elite Padel / Everyday", price: 145, type: "Control", image: "images/rally-one.jpg", color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
+  { id: "rally-line", name: "Line 01", brand: "Elite Padel / Precision", price: 185, type: "Precision", image: "images/rally-line.jpg", color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." },
+  { id: "rally-pulse", name: "Pulse", brand: "Elite Padel / Attack", price: 220, type: "Power", image: "images/rally-pulse.jpg", color: "#e8d8c6", accent: "#202522", tag: "Power", description: "A high-balance weapon that turns a clean swing into serious pace." },
+  { id: "rally-soft", name: "Soft Serve", brand: "Elite Padel / Comfort", price: 160, type: "Comfort", image: "images/rally-soft.jpg", color: "#ead8df", accent: "#c9f25d", tag: "Easy feel", description: "Soft at impact and easy on the arm, with plenty of room for your game to grow." },
+  { id: "rally-court", name: "Court 02", brand: "Elite Padel / Balanced", price: 195, type: "Balance", image: "images/rally-court.jpg", color: "#d5d8ca", accent: "#ef7657", tag: "Balanced", description: "A balanced teardrop for composed transitions and confident net play." },
+  { id: "rally-apex", name: "Apex", brand: "Elite Padel / Tour", price: 260, type: "Power", image: "images/rally-apex.jpg", color: "#d3d1e0", accent: "#c9f25d", tag: "Tour", description: "Tour-level stability and a diamond face for players who own the overhead." }
 ];
 
 const CART_KEY = "rally-padel-cart";
@@ -128,6 +128,15 @@ function setupCheckout() {
   });
 }
 
+function applyBranding() {
+  document.title = document.title.replace("Rally Padel", "Elite Padel");
+  document.querySelectorAll(".wordmark").forEach(wordmark => {
+    wordmark.innerHTML = "ELITE PADEL<span>/</span>";
+    wordmark.setAttribute("aria-label", "Elite Padel home");
+  });
+  document.querySelectorAll(".footer-meta").forEach(meta => { meta.textContent = "© 2026 Elite Padel"; });
+}
+
 document.addEventListener("click", event => {
   const add = event.target.closest("[data-add]");
   if (add) addToCart(add.dataset.add);
@@ -140,6 +149,7 @@ document.addEventListener("click", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  applyBranding();
   updateCartCount();
   renderProductGrids();
   renderCart();
