@@ -1,6 +1,6 @@
 const products = [
-  { id: "rally-one", name: "The One", brand: "Elite Padel / Everyday", price: 145, type: "Control", gallery: ["images/the-one-01.jpg", "images/the-one-02.jpg", "images/the-one-03.jpg", "images/the-one-04.jpg"], color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
-  { id: "rally-line", name: "Line 01", brand: "Elite Padel / Precision", price: 185, type: "Precision", gallery: ["images/line-01.jpg", "images/line-02.jpg", "images/line-03.jpg", "images/line-04.jpg", "images/line-05.jpg", "images/line-06.jpg"], color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
+  { id: "rally-one", name: "The One", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/the-one-01.jpg", "images/the-one-02.jpg", "images/the-one-03.jpg", "images/the-one-04.jpg"], color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
+  { id: "rally-line", name: "Line 01", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/line-01.jpg", "images/line-02.jpg", "images/line-03.jpg", "images/line-04.jpg", "images/line-05.jpg", "images/line-06.jpg"], color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
 ];
 
 const CART_KEY = "rally-padel-cart";
