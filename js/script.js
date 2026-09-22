@@ -1,5 +1,5 @@
 const products = [
-  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/pink 1.JPG", "images/pink 2.JPG", "images/pink 3.JPG", "images/pink 4.JPG"], color: "#ead8df", accent: "#ef7657", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
+  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/pink 4.JPG", "images/pink 1.JPG", "images/pink 2.JPG", "images/pink 3.JPG"], color: "#ead8df", accent: "#ef7657", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
   { id: "rally-line", name: "Elite Series Blue", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/blue 1.JPG", "images/blue 2.JPG", "images/blue 3.JPG", "images/blue 4.JPG", "images/blue 5.JPG", "images/blue 6.JPG"], color: "#d6e2e7", accent: "#202522", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
 ];
 
