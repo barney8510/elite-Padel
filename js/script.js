@@ -1,10 +1,6 @@
 const products = [
-  { id: "rally-one", name: "The One", brand: "Elite Padel / Everyday", price: 145, type: "Control", image: "images/rally-one.jpg", color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
-  { id: "rally-line", name: "Line 01", brand: "Elite Padel / Precision", price: 185, type: "Precision", image: "images/rally-line.jpg", color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." },
-  { id: "rally-pulse", name: "Pulse", brand: "Elite Padel / Attack", price: 220, type: "Power", image: "images/rally-pulse.jpg", color: "#e8d8c6", accent: "#202522", tag: "Power", description: "A high-balance weapon that turns a clean swing into serious pace." },
-  { id: "rally-soft", name: "Soft Serve", brand: "Elite Padel / Comfort", price: 160, type: "Comfort", image: "images/rally-soft.jpg", color: "#ead8df", accent: "#c9f25d", tag: "Easy feel", description: "Soft at impact and easy on the arm, with plenty of room for your game to grow." },
-  { id: "rally-court", name: "Court 02", brand: "Elite Padel / Balanced", price: 195, type: "Balance", image: "images/rally-court.jpg", color: "#d5d8ca", accent: "#ef7657", tag: "Balanced", description: "A balanced teardrop for composed transitions and confident net play." },
-  { id: "rally-apex", name: "Apex", brand: "Elite Padel / Tour", price: 260, type: "Power", image: "images/rally-apex.jpg", color: "#d3d1e0", accent: "#c9f25d", tag: "Tour", description: "Tour-level stability and a diamond face for players who own the overhead." }
+  { id: "rally-one", name: "The One", brand: "Elite Padel / Everyday", price: 145, type: "Control", gallery: ["images/the-one-01.jpg", "images/the-one-02.jpg", "images/the-one-03.jpg", "images/the-one-04.jpg"], color: "#dce8c4", accent: "#c9f25d", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
+  { id: "rally-line", name: "Line 01", brand: "Elite Padel / Precision", price: 185, type: "Precision", gallery: ["images/line-01.jpg", "images/line-02.jpg", "images/line-03.jpg", "images/line-04.jpg", "images/line-05.jpg", "images/line-06.jpg"], color: "#d6e2e7", accent: "#ef7657", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
 ];
 
 const CART_KEY = "rally-padel-cart";
@@ -43,7 +39,9 @@ function addToCart(id) {
 }
 
 function productVisual(product, extraClass = "") {
-  return `<div class="product-image ${extraClass}" style="--card-color:${product.color};--card-accent:${product.accent}"><div class="mini-racket" aria-hidden="true"></div><img src="${product.image}" alt="${product.name} padel racket" data-racket-image></div>`;
+  const slides = product.gallery.map((image, index) => `<div class="gallery-slide${index === 0 ? " active" : ""}" data-slide="${index}"><div class="mini-racket" aria-hidden="true"></div><img src="${image}" alt="${product.name} padel racket photo ${index + 1} of ${product.gallery.length}" data-racket-image></div>`).join("");
+  const dots = product.gallery.map((image, index) => `<button class="gallery-dot${index === 0 ? " active" : ""}" type="button" aria-label="Show photo ${index + 1} of ${product.name}" data-gallery-dot="${index}"></button>`).join("");
+  return `<div class="product-gallery ${extraClass}" style="--card-color:${product.color};--card-accent:${product.accent}" data-gallery="${product.id}"><div class="gallery-viewport">${slides}</div><button class="gallery-arrow gallery-prev" type="button" aria-label="Previous ${product.name} photo" data-gallery-change="-1">←</button><button class="gallery-arrow gallery-next" type="button" aria-label="Next ${product.name} photo" data-gallery-change="1">→</button><div class="gallery-dots">${dots}</div></div>`;
 }
 
 function renderProductCard(product) {
@@ -53,11 +51,19 @@ function renderProductCard(product) {
 function renderProductGrids() {
   document.querySelectorAll("[data-product-grid]").forEach(grid => {
     const isFeatured = grid.dataset.productGrid === "featured";
-    grid.innerHTML = products.slice(0, isFeatured ? 3 : products.length).map(renderProductCard).join("");
+    grid.innerHTML = products.slice(0, isFeatured ? 2 : products.length).map(renderProductCard).join("");
   });
   const count = document.querySelector("[data-product-count]");
   if (count) count.textContent = products.length;
   document.querySelectorAll("[data-racket-image]").forEach(image => image.addEventListener("error", () => image.classList.add("image-missing"), { once: true }));
+}
+
+function changeGallery(gallery, change) {
+  const slides = [...gallery.querySelectorAll(".gallery-slide")];
+  const current = slides.findIndex(slide => slide.classList.contains("active"));
+  const next = (current + change + slides.length) % slides.length;
+  slides.forEach((slide, index) => slide.classList.toggle("active", index === next));
+  gallery.querySelectorAll(".gallery-dot").forEach((dot, index) => dot.classList.toggle("active", index === next));
 }
 
 function calculateTotals(cart = getCart()) {
@@ -146,6 +152,15 @@ document.addEventListener("click", event => {
   if (remove) { saveCart(getCart().filter(item => item.id !== remove.dataset.remove)); renderCart(); }
   const checkout = event.target.closest("[data-checkout-link][aria-disabled='true']");
   if (checkout) event.preventDefault();
+  const galleryChange = event.target.closest("[data-gallery-change]");
+  if (galleryChange) changeGallery(galleryChange.closest("[data-gallery]"), Number(galleryChange.dataset.galleryChange));
+  const galleryDot = event.target.closest("[data-gallery-dot]");
+  if (galleryDot) {
+    const gallery = galleryDot.closest("[data-gallery]");
+    const slides = [...gallery.querySelectorAll(".gallery-slide")];
+    slides.forEach((slide, index) => slide.classList.toggle("active", index === Number(galleryDot.dataset.galleryDot)));
+    gallery.querySelectorAll(".gallery-dot").forEach((dot, index) => dot.classList.toggle("active", index === Number(galleryDot.dataset.galleryDot)));
+  }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
