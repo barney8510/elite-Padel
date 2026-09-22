@@ -51,7 +51,7 @@ function renderProductCard(product) {
 function renderProductGrids() {
   document.querySelectorAll("[data-product-grid]").forEach(grid => {
     const isFeatured = grid.dataset.productGrid === "featured";
-    grid.innerHTML = products.slice(0, isFeatured ? 2 : products.length).map(renderProductCard).join("");
+    grid.innerHTML = `${products.slice(0, isFeatured ? 2 : products.length).map(renderProductCard).join("")}<aside class="collection-note"><p class="eyebrow">Elite Padel / 02</p><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p><span class="note-mark">EP</span></aside>`;
   });
   const count = document.querySelector("[data-product-count]");
   if (count) count.textContent = products.length;
@@ -171,5 +171,5 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCheckout();
   setupCheckout();
   const sort = document.querySelector("#sort-products");
-  if (sort) sort.addEventListener("change", () => { const grid = document.querySelector('[data-product-grid="all"]'); if (!grid) return; const sorted = [...products].sort((a, b) => sort.value === "price-low" ? a.price - b.price : sort.value === "price-high" ? b.price - a.price : products.indexOf(a) - products.indexOf(b)); grid.innerHTML = sorted.map(renderProductCard).join(""); });
+  if (sort) sort.addEventListener("change", () => { const grid = document.querySelector('[data-product-grid="all"]'); if (!grid) return; const sorted = [...products].sort((a, b) => sort.value === "price-low" ? a.price - b.price : sort.value === "price-high" ? b.price - a.price : products.indexOf(a) - products.indexOf(b)); grid.innerHTML = `${sorted.map(renderProductCard).join("")}<aside class="collection-note"><p class="eyebrow">Elite Padel / 02</p><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p><span class="note-mark">EP</span></aside>`; });
 });
