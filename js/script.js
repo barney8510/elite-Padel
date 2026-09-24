@@ -1,6 +1,13 @@
+const precisionDetails = {
+  overview: "The Elite Padel Elite Series Padel Racket is meticulously crafted for players in search of the ideal combination of control, power, comfort, and elegance. Constructed using high-quality carbon fibre materials, it offers consistent performance with a forgiving touch for beginners and intermediate players.",
+  construction: ["3K Carbon Fibre Face for power, responsiveness, and durability", "Medium-Density EVA Core for balanced power, control, and vibration reduction", "Round Head Shape for a larger, more forgiving sweet spot", "Medium Balance for manoeuvrability in offensive and defensive play", "Premium Carbon Fibre Construction for structural stability", "Modern Premium Finish for a sleek, professional look"],
+  technologies: ["Maximum control from a large sweet spot", "Comfortable feel from a vibration-dampening EVA core", "Forgiving performance for improving players", "Durable premium carbon fibre construction", "Versatile playability for attacking and defensive styles"],
+  features: ["Level: Beginner / Intermediate", "Game type: Control", "Weight: 365g", "Head shape: Round", "Balance: Medium", "Frame thickness: 38mm", "Surface texture: Moulded Texture", "Core: Medium-Density EVA", "Face: 13K Carbon Fibre", "Frame: Carbon Fibre", "Power: 85/100", "Control: 100/100"]
+};
+
 const products = [
-  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/cutout/pink 1.png", "images/cutout/pink 3.png", "images/cutout/pink 4.png"], color: "#ead8df", accent: "#82cfe1", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
-  { id: "rally-line", name: "Elite Series Blue", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/cutout/blue 1.png", "images/cutout/blue 2.png", "images/cutout/blue 3.png", "images/cutout/blue 4.png"], color: "#d6e2e7", accent: "#202522", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
+  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/cutout/pink 1.png", "images/cutout/pink 3.png", "images/cutout/pink 4.png"], color: "#ead8df", accent: "#82cfe1", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last.", details: precisionDetails },
+  { id: "rally-line", name: "Elite Series Blue", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/cutout/blue 1.png", "images/cutout/blue 2.png", "images/cutout/blue 3.png", "images/cutout/blue 4.png"], color: "#d6e2e7", accent: "#202522", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners.", details: precisionDetails }
 ];
 
 const CART_KEY = "rally-padel-cart";
@@ -39,13 +46,14 @@ function addToCart(id) {
 }
 
 function productVisual(product, extraClass = "") {
-  const slides = product.gallery.map((image, index) => `<div class="gallery-slide${index === 0 ? " active" : ""}" data-slide="${index}"><img src="${image}" alt="${product.name} padel racket photo ${index + 1} of ${product.gallery.length}" data-racket-image></div>`).join("");
+  const galleryImages = product.gallery.length > 1 ? [product.gallery[product.gallery.length - 1], ...product.gallery, product.gallery[0]] : product.gallery;
+  const slides = galleryImages.map((image, index) => `<div class="gallery-slide" data-slide="${index}"><img src="${image}" alt="${product.name} padel racket photo ${((index + product.gallery.length - 2 + product.gallery.length) % product.gallery.length) + 1} of ${product.gallery.length}" data-racket-image></div>`).join("");
   const dots = product.gallery.map((image, index) => `<button class="gallery-dot${index === 0 ? " active" : ""}" type="button" aria-label="Show photo ${index + 1} of ${product.name}" data-gallery-dot="${index}"></button>`).join("");
-  return `<div class="product-gallery ${extraClass}" style="--card-color:${product.color};--card-accent:${product.accent}" data-gallery="${product.id}"><div class="gallery-viewport">${slides}</div><button class="gallery-arrow gallery-prev" type="button" aria-label="Previous ${product.name} photo" data-gallery-change="-1">←</button><button class="gallery-arrow gallery-next" type="button" aria-label="Next ${product.name} photo" data-gallery-change="1">→</button><div class="gallery-dots">${dots}</div></div>`;
+  return `<div class="product-gallery ${extraClass}" style="--card-color:${product.color};--card-accent:${product.accent}" data-gallery="${product.id}" data-gallery-index="0"><div class="gallery-viewport"><div class="gallery-track" style="--gallery-position:1">${slides}</div></div><button class="gallery-arrow gallery-prev" type="button" aria-label="Previous ${product.name} photo" data-gallery-change="-1">←</button><button class="gallery-arrow gallery-next" type="button" aria-label="Next ${product.name} photo" data-gallery-change="1">→</button><div class="gallery-dots">${dots}</div></div>`;
 }
 
 function renderProductCard(product) {
-  return `<article class="product-card">${productVisual(product)}<div class="card-label"><span>${product.tag}</span><b>${product.type}</b></div><div class="card-info"><h3 class="card-title">${product.name}</h3><div class="card-meta"><span>${product.brand}</span><span>${money(product.price)}</span></div><button class="card-action" type="button" data-add="${product.id}">Add to bag +</button></div></article>`;
+  return `<article class="product-card">${productVisual(product)}<div class="card-label"><span>${product.tag}</span><b>${product.type}</b></div><div class="card-info"><h3 class="card-title"><a href="product.html?id=${product.id}">${product.name}</a></h3><div class="card-meta"><span>${product.brand}</span><span>${money(product.price)}</span></div><a class="card-action" href="product.html?id=${product.id}">View racket ↗</a></div></article>`;
 }
 
 function renderProductGrids() {
@@ -59,11 +67,23 @@ function renderProductGrids() {
 }
 
 function changeGallery(gallery, change) {
-  const slides = [...gallery.querySelectorAll(".gallery-slide")];
-  const current = slides.findIndex(slide => slide.classList.contains("active"));
-  const next = (current + change + slides.length) % slides.length;
-  slides.forEach((slide, index) => slide.classList.toggle("active", index === next));
-  gallery.querySelectorAll(".gallery-dot").forEach((dot, index) => dot.classList.toggle("active", index === next));
+  const product = getProduct(gallery.dataset.gallery);
+  if (!product || product.gallery.length < 2) return;
+  const next = Number(gallery.dataset.galleryIndex) + change;
+  gallery.dataset.galleryIndex = String((next + product.gallery.length) % product.gallery.length);
+  gallery.querySelector(".gallery-track").style.setProperty("--gallery-position", next + 1);
+  gallery.querySelectorAll(".gallery-dot").forEach((dot, index) => dot.classList.toggle("active", index === Number(gallery.dataset.galleryIndex)));
+}
+
+function renderProductDetail() {
+  const container = document.querySelector("[data-product-detail]");
+  if (!container) return;
+  const product = getProduct(new URLSearchParams(window.location.search).get("id")) || products[0];
+  const featureList = product.details.features.map(feature => `<li>${feature}</li>`).join("");
+  const technologyList = product.details.technologies.map(technology => `<li>${technology}</li>`).join("");
+  const constructionList = product.details.construction.map(item => `<li>${item}</li>`).join("");
+  container.innerHTML = `<div class="product-detail-visual">${productVisual(product, "product-gallery-detail")}</div><div class="product-detail-copy"><p class="eyebrow">${product.tag} / ${product.type}</p><h1>${product.name}</h1><p class="product-detail-brand">${product.brand}</p><p class="product-detail-price">${money(product.price)}</p><p class="product-detail-description">${product.details.overview}</p><button class="button button-dark button-full" type="button" data-add="${product.id}">Add to bag <span>+</span></button><div class="detail-block"><h2>Construction</h2><ul>${constructionList}</ul></div><div class="detail-block"><h2>Technologies</h2><ul>${technologyList}</ul></div><div class="detail-block"><h2>Features</h2><ul>${featureList}</ul></div></div>`;
+  container.querySelectorAll("[data-racket-image]").forEach(image => image.addEventListener("error", () => image.classList.add("image-missing"), { once: true }));
 }
 
 function calculateTotals(cart = getCart()) {
@@ -232,9 +252,24 @@ document.addEventListener("click", event => {
   const galleryDot = event.target.closest("[data-gallery-dot]");
   if (galleryDot) {
     const gallery = galleryDot.closest("[data-gallery]");
-    const slides = [...gallery.querySelectorAll(".gallery-slide")];
-    slides.forEach((slide, index) => slide.classList.toggle("active", index === Number(galleryDot.dataset.galleryDot)));
-    gallery.querySelectorAll(".gallery-dot").forEach((dot, index) => dot.classList.toggle("active", index === Number(galleryDot.dataset.galleryDot)));
+    const index = Number(galleryDot.dataset.galleryDot);
+    gallery.dataset.galleryIndex = String(index);
+    gallery.querySelector(".gallery-track").style.setProperty("--gallery-position", index + 1);
+    gallery.querySelectorAll(".gallery-dot").forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === index));
+  }
+});
+
+document.addEventListener("transitionend", event => {
+  if (!event.target.matches(".gallery-track")) return;
+  const gallery = event.target.closest("[data-gallery]");
+  const product = getProduct(gallery.dataset.gallery);
+  const position = Number(event.target.style.getPropertyValue("--gallery-position"));
+  if (position === 0 || position === product.gallery.length + 1) {
+    event.target.classList.add("gallery-track-reset");
+    const index = position === 0 ? product.gallery.length - 1 : 0;
+    gallery.dataset.galleryIndex = String(index);
+    event.target.style.setProperty("--gallery-position", index + 1);
+    requestAnimationFrame(() => event.target.classList.remove("gallery-track-reset"));
   }
 });
 
@@ -242,6 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyBranding();
   updateCartCount();
   renderProductGrids();
+  renderProductDetail();
   renderCart();
   renderCheckout();
   setupCheckout();
