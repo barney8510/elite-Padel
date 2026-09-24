@@ -1,0 +1,14 @@
+{
+  "name": "elite-padel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Elite Padel storefront with Stripe Checkout.",
+  "type": "module",
+  "scripts": {
+    "start": "node dev-server.js",
+    "dev": "node dev-server.js"
+  },
+  "dependencies": {
+    "stripe": "^17.4.0"
+  }
+}

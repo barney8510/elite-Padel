@@ -1,1 +1,15 @@
 .DS_Store
+
+# Dependencies
+node_modules/
+
+# Local environment variables (never commit real keys)
+.env
+.env*.local
+
+# Vercel
+.vercel
+
+# Logs
+*.log
+npm-debug.log*

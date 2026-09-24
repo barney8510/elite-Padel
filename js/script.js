@@ -1,6 +1,6 @@
 const products = [
-  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/pink 4.JPG", "images/pink 1.JPG", "images/pink 2.JPG", "images/pink 3.JPG"], color: "#ead8df", accent: "#ef7657", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
-  { id: "rally-line", name: "Elite Series Blue", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/blue 1.JPG", "images/blue 2.JPG", "images/blue 3.JPG", "images/blue 4.JPG", "images/blue 5.JPG", "images/blue 6.JPG"], color: "#d6e2e7", accent: "#202522", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
+  { id: "rally-one", name: "Elite Series Pink", brand: "Elite Padel / Everyday", price: 74.99, type: "Control", gallery: ["images/cutout/pink 1.png", "images/cutout/pink 3.png", "images/cutout/pink 4.png"], color: "#ead8df", accent: "#ef7657", tag: "Best seller", description: "A forgiving all-rounder for building confidence from the first ball to the last." },
+  { id: "rally-line", name: "Elite Series Blue", brand: "Elite Padel / Precision", price: 74.99, type: "Precision", gallery: ["images/cutout/blue 1.png", "images/cutout/blue 2.png", "images/cutout/blue 3.png", "images/cutout/blue 4.png"], color: "#d6e2e7", accent: "#202522", tag: "New", description: "A teardrop profile with a crisp response for players who like to paint the corners." }
 ];
 
 const CART_KEY = "rally-padel-cart";
@@ -39,7 +39,7 @@ function addToCart(id) {
 }
 
 function productVisual(product, extraClass = "") {
-  const slides = product.gallery.map((image, index) => `<div class="gallery-slide${index === 0 ? " active" : ""}" data-slide="${index}"><div class="mini-racket" aria-hidden="true"></div><img src="${image}" alt="${product.name} padel racket photo ${index + 1} of ${product.gallery.length}" data-racket-image></div>`).join("");
+  const slides = product.gallery.map((image, index) => `<div class="gallery-slide${index === 0 ? " active" : ""}" data-slide="${index}"><img src="${image}" alt="${product.name} padel racket photo ${index + 1} of ${product.gallery.length}" data-racket-image></div>`).join("");
   const dots = product.gallery.map((image, index) => `<button class="gallery-dot${index === 0 ? " active" : ""}" type="button" aria-label="Show photo ${index + 1} of ${product.name}" data-gallery-dot="${index}"></button>`).join("");
   return `<div class="product-gallery ${extraClass}" style="--card-color:${product.color};--card-accent:${product.accent}" data-gallery="${product.id}"><div class="gallery-viewport">${slides}</div><button class="gallery-arrow gallery-prev" type="button" aria-label="Previous ${product.name} photo" data-gallery-change="-1">←</button><button class="gallery-arrow gallery-next" type="button" aria-label="Next ${product.name} photo" data-gallery-change="1">→</button><div class="gallery-dots">${dots}</div></div>`;
 }
@@ -51,7 +51,7 @@ function renderProductCard(product) {
 function renderProductGrids() {
   document.querySelectorAll("[data-product-grid]").forEach(grid => {
     const isFeatured = grid.dataset.productGrid === "featured";
-    grid.innerHTML = `${products.slice(0, isFeatured ? 2 : products.length).map(renderProductCard).join("")}<aside class="collection-note"><p class="eyebrow">Elite Padel / 02</p><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p><span class="note-mark">EP</span></aside>`;
+    grid.innerHTML = `${products.slice(0, isFeatured ? 2 : products.length).map(renderProductCard).join("")}<aside class="collection-note"><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p></aside>`;
   });
   const count = document.querySelector("[data-product-count]");
   if (count) count.textContent = products.length;
@@ -80,7 +80,7 @@ function renderCart() {
   } else {
     container.innerHTML = cart.map(item => {
       const product = getProduct(item.id);
-      return `<div class="cart-row"><div class="cart-thumb" style="--card-color:${product.color};--card-accent:${product.accent}"><div class="mini-racket" aria-hidden="true"></div></div><div><p class="cart-name">${product.name}</p><span class="cart-detail">${product.brand} / ${product.type}</span><div class="quantity"><button type="button" aria-label="Decrease ${product.name} quantity" data-quantity="${product.id}" data-change="-1">−</button><span>${item.quantity}</span><button type="button" aria-label="Increase ${product.name} quantity" data-quantity="${product.id}" data-change="1">+</button></div><br><button class="remove-item" type="button" data-remove="${product.id}">Remove</button></div><strong class="cart-price">${money(product.price * item.quantity)}</strong></div>`;
+      return `<div class="cart-row"><div class="cart-thumb" style="--card-color:${product.color};--card-accent:${product.accent}"><img class="cart-thumb-image" src="${product.gallery[0]}" alt="${product.name} padel racket"></div><div><p class="cart-name">${product.name}</p><div class="quantity"><button type="button" aria-label="Decrease ${product.name} quantity" data-quantity="${product.id}" data-change="-1">−</button><span>${item.quantity}</span><button type="button" aria-label="Increase ${product.name} quantity" data-quantity="${product.id}" data-change="1">+</button></div><br><button class="remove-item" type="button" data-remove="${product.id}">Remove</button></div><strong class="cart-price">${money(product.price * item.quantity)}</strong></div>`;
     }).join("");
   }
   const totals = calculateTotals(cart);
@@ -117,27 +117,102 @@ function changeQuantity(id, change) {
 function setupCheckout() {
   const form = document.querySelector("[data-checkout-form]");
   if (!form) return;
-  form.addEventListener("submit", event => {
+  const button = form.querySelector("[data-submit-button]");
+  const error = document.querySelector("[data-form-error]");
+  const cancelFlag = new URLSearchParams(window.location.search).get("canceled");
+  if (cancelFlag && error) error.textContent = "Payment was canceled. Your bag is still here whenever you are ready.";
+
+  form.addEventListener("submit", async event => {
     event.preventDefault();
     const required = [...form.querySelectorAll("[required]")];
     const missing = required.filter(input => !input.value.trim());
     required.forEach(input => input.classList.toggle("invalid", missing.includes(input)));
-    const card = form.elements.card;
-    if (card.value.replace(/\D/g, "").length < 16) { card.classList.add("invalid"); if (!missing.includes(card)) missing.push(card); }
-    const error = document.querySelector("[data-form-error]");
     if (missing.length) { error.textContent = "Please complete the highlighted fields to continue."; missing[0].focus(); return; }
+
+    const cart = getCart();
+    if (!cart.length) { window.location.href = "cart.html"; return; }
+
     error.textContent = "";
-    localStorage.removeItem(CART_KEY);
-    updateCartCount();
-    form.hidden = true;
-    document.querySelector("[data-confirmation]").hidden = false;
+    button.disabled = true;
+    const label = button.innerHTML;
+    button.innerHTML = "Taking you to payment…";
+
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: cart,
+          customer: {
+            email: form.elements.email?.value.trim() || undefined,
+            phone: form.elements.phone?.value.trim() || undefined
+          }
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.url) throw new Error(data.error || "We could not start the payment.");
+      window.location.href = data.url;
+    } catch (fetchError) {
+      error.textContent = fetchError.message;
+      button.disabled = false;
+      button.innerHTML = label;
+    }
   });
+}
+
+async function setupSuccess() {
+  const card = document.querySelector("[data-success-card]");
+  if (!card) return;
+  const sessionId = new URLSearchParams(window.location.search).get("session_id");
+  if (!sessionId) { renderSuccessError(card, "We could not find that order."); return; }
+
+  try {
+    const response = await fetch(`/api/session-status?session_id=${encodeURIComponent(sessionId)}`);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "We could not find that order.");
+    if (!data.paid) { renderSuccessPending(card, data); return; }
+    renderSuccess(card, data);
+  } catch (fetchError) {
+    renderSuccessError(card, fetchError.message);
+  }
+}
+
+function clearBag() {
+  localStorage.removeItem(CART_KEY);
+  updateCartCount();
+}
+
+function renderSuccess(card, data) {
+  clearBag();
+  const d = data.delivery || {};
+  const addressLines = [d.line1, d.line2, d.city, d.postcode, d.country].filter(Boolean);
+  const deliveryBlock = addressLines.length
+    ? `<div class="success-delivery"><p class="eyebrow">Delivering to</p><p><strong>${d.name || ""}</strong><br>${addressLines.join("<br>")}</p></div>`
+    : "";
+  card.innerHTML = `<p class="eyebrow">Order confirmed</p><h2>That’s a <em>rally.</em></h2><p>A confirmation has been sent${data.email ? ` to <strong>${data.email}</strong>` : ""}. Your rackets are on their way.</p>${deliveryBlock}<a class="button button-dark" href="products.html">Back to rackets <span>↗</span></a>`;
+  const items = document.querySelector("[data-success-items]");
+  if (items) items.innerHTML = (data.items || []).map(item => `<div class="checkout-line"><span>${item.name}<small>Qty ${item.quantity}</small></span><strong>${money(item.amount)}</strong></div>`).join("") || `<p class="success-muted">Your items are confirmed.</p>`;
+  const shipping = document.querySelector("[data-success-shipping]");
+  if (shipping) shipping.textContent = data.totals?.shipping ? money(data.totals.shipping) : "Free";
+  const total = document.querySelector("[data-success-total]");
+  if (total) total.textContent = money(data.total || 0);
+}
+
+function renderSuccessPending(card, data) {
+  card.innerHTML = `<p class="eyebrow">Processing</p><h2>Still <em>settling.</em></h2><p>Your payment is being confirmed. Refresh this page in a moment to see your order.</p><a class="button button-dark" href="products.html">Back to rackets <span>↗</span></a>`;
+  if (data?.email) { const total = document.querySelector("[data-success-total]"); if (total) total.textContent = money(data.total || 0); }
+}
+
+function renderSuccessError(card, message) {
+  card.innerHTML = `<p class="eyebrow">Something went wrong</p><h2>No <em>rattle.</em></h2><p>${message || "We could not confirm that payment."} If you were charged, contact us and we will sort it out.</p><a class="button button-dark" href="cart.html">Back to bag <span>↗</span></a>`;
 }
 
 function applyBranding() {
   document.title = document.title.replace("Rally Padel", "Elite Padel");
   document.querySelectorAll(".wordmark").forEach(wordmark => {
-    wordmark.innerHTML = "ELITE PADEL<span>/</span>";
+    if (!wordmark.querySelector(".site-logo")) {
+      wordmark.innerHTML = '<img class="site-logo" src="images/logo.jpeg" alt="Elite Padel">';
+    }
     wordmark.setAttribute("aria-label", "Elite Padel home");
   });
   document.querySelectorAll(".footer-meta").forEach(meta => { meta.textContent = "© 2026 Elite Padel"; });
@@ -170,6 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCart();
   renderCheckout();
   setupCheckout();
+  setupSuccess();
+  if (new URLSearchParams(window.location.search).get("canceled")) renderCart();
   const sort = document.querySelector("#sort-products");
-  if (sort) sort.addEventListener("change", () => { const grid = document.querySelector('[data-product-grid="all"]'); if (!grid) return; const sorted = [...products].sort((a, b) => sort.value === "price-low" ? a.price - b.price : sort.value === "price-high" ? b.price - a.price : products.indexOf(a) - products.indexOf(b)); grid.innerHTML = `${sorted.map(renderProductCard).join("")}<aside class="collection-note"><p class="eyebrow">Elite Padel / 02</p><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p><span class="note-mark">EP</span></aside>`; });
+  if (sort) sort.addEventListener("change", () => { const grid = document.querySelector('[data-product-grid="all"]'); if (!grid) return; const sorted = [...products].sort((a, b) => sort.value === "price-low" ? a.price - b.price : sort.value === "price-high" ? b.price - a.price : products.indexOf(a) - products.indexOf(b)); grid.innerHTML = `${sorted.map(renderProductCard).join("")}<aside class="collection-note"><h3>Pick your<br><em>colour.</em></h3><p>Two shapes. Two personalities. Find the racket that feels like yours.</p></aside>`; });
 });
